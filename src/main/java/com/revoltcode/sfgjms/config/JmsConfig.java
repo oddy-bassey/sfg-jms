@@ -7,9 +7,12 @@ import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 
 @Configuration
-public class JmsConfig {
+public class 
+JmsConfig {
 
     public static final String MY_QUEUE = "My_Hello_World!";
+    public static final String MY_SEND_RCV_QUEUE = "reply_back_to_me";
+
     @Bean
     public MessageConverter messageConverter(){
         MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
