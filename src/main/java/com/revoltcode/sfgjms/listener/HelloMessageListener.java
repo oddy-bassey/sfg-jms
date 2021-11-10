@@ -3,6 +3,7 @@ package com.revoltcode.sfgjms.listener;
 import com.revoltcode.sfgjms.config.JmsConfig;
 import com.revoltcode.sfgjms.model.HelloWorldMessage;
 import lombok.RequiredArgsConstructor;
+import org.apache.activemq.artemis.jms.client.ActiveMQMessage;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.messaging.MessageHeaders;
@@ -10,6 +11,7 @@ import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import java.util.UUID;
@@ -37,15 +39,21 @@ public class HelloMessageListener {
 
     @JmsListener(destination = JmsConfig.MY_SEND_RCV_QUEUE)
     public void listenForHello(@Payload HelloWorldMessage helloWorldMessage,
-                       @Headers MessageHeaders messageHeaders, Message message) throws JMSException {
+                               @Headers MessageHeaders messageHeaders,
+                               Message jmsMessage,
+                               org.springframework.messaging.Message springMessage) throws JMSException {
 
-        System.out.println("info --> "+helloWorldMessage.toString());
+        System.out.println("info --> " + helloWorldMessage.toString());
 
         HelloWorldMessage payloadMessage = HelloWorldMessage.builder()
                 .id(UUID.randomUUID())
                 .message("World!")
                 .build();
 
-        jmsTemplate.convertAndSend(message.getJMSReplyTo(), payloadMessage);
+        //spring message implementation
+        jmsTemplate.convertAndSend((Destination) springMessage.getHeaders().get("jms_replyTo"), "spring message implementation!");
+
+        //Jms message implementation
+        //jmsTemplate.convertAndSend(jmsMessage.getJMSReplyTo(), payloadMessage);
     }
 }
